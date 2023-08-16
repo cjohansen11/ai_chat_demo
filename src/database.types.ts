@@ -14,21 +14,43 @@ export interface Database {
           bio: string | null
           id: number
           name: string | null
-          vector: string | null
         }
         Insert: {
           bio?: string | null
           id?: never
           name?: string | null
-          vector?: string | null
         }
         Update: {
           bio?: string | null
           id?: never
           name?: string | null
-          vector?: string | null
         }
         Relationships: []
+      }
+      embeddings: {
+        Row: {
+          ai_character_id: number | null
+          id: string
+          vector: string | null
+        }
+        Insert: {
+          ai_character_id?: number | null
+          id?: string
+          vector?: string | null
+        }
+        Update: {
+          ai_character_id?: number | null
+          id?: string
+          vector?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "embeddings_ai_character_id_fkey"
+            columns: ["ai_character_id"]
+            referencedRelation: "ai_character"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       message: {
         Row: {
@@ -96,7 +118,27 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_embeddings:
+        | {
+            Args: {
+              input_vector: string
+            }
+            Returns: {
+              ai_character_id: number | null
+              id: string
+              vector: string | null
+            }[]
+          }
+        | {
+            Args: {
+              input_vector: string
+            }
+            Returns: {
+              ai_character_id: number | null
+              id: string
+              vector: string | null
+            }[]
+          }
     }
     Enums: {
       [_ in never]: never

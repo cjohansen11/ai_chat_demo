@@ -1,7 +1,7 @@
 import express, { Request, Response, json } from "express";
 import supabase from "./utils/db";
 import * as supabaseController from "./controllers/supabase";
-import { createEmbeddings } from "./controllers/openai";
+import * as openaiController from "./controllers/openai";
 
 const app = express();
 
@@ -38,11 +38,13 @@ app.post(
 
       const input = `[USER: ${uid}] [AID: ${aid}] ${message}`;
 
-      const embedding = await createEmbeddings({ input, uid });
+      const embedding = await openaiController.createEmbeddings({ input, uid });
 
-      await supabaseController.updateAIWithEmbedding({ aid, embedding });
+      await supabaseController.queryEmbeddings({ embedding });
 
-      res.status(200).send({ aiName, aiBio, gamertag });
+      await supabaseController.insertEmbedding({ aid, embedding });
+
+      res.status(200).send({});
     } catch (error) {
       res.status(500).send((error as Error).message);
     }

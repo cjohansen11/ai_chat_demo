@@ -7,6 +7,8 @@ export const readAIData = async (aid: string) => {
       .select("name, bio")
       .eq("id", aid);
 
+    if (data?.length === 0) throw new Error(`${aid} not found`);
+
     if (error) throw new Error(error.message);
 
     return data[0];
@@ -30,7 +32,7 @@ export const readUserData = async (uid: string) => {
   }
 };
 
-export const updateAIWithEmbedding = async ({
+export const insertEmbedding = async ({
   embedding,
   aid,
 }: {
@@ -39,14 +41,28 @@ export const updateAIWithEmbedding = async ({
 }) => {
   try {
     const { error } = await supabase
-      .from("ai_character")
-      .update({ vector: JSON.stringify(embedding) })
-      .eq("id", aid);
+      .from("embeddings")
+      .upsert({ ai_character_id: +aid, vector: JSON.stringify(embedding) });
 
     if (error) throw new Error(error.message);
   } catch (error) {
     throw new Error(
       `Error occurred adding embedding for AID: ${aid}. Error: ${error}`
     );
+  }
+};
+
+export const queryEmbeddings = async ({
+  embedding,
+}: {
+  embedding: number[];
+}) => {
+  try {
+    const { data, error } = await supabase.rpc("get_embeddings", {
+      input_vector: JSON.stringify(embedding),
+    });
+    console.log({ data, error });
+  } catch (error) {
+    throw new Error(`Error occurred querying embeddings. Error: ${error}`);
   }
 };

@@ -8,8 +8,6 @@ export const createEmbeddings = async ({
   uid: string;
 }) => {
   try {
-    console.log({ input });
-
     const { data } = await openai.embeddings.create({
       input,
       model: process.env.OPENAI_EMBEDDING_MODEL as string,
