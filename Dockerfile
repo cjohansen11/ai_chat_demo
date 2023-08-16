@@ -2,14 +2,14 @@ FROM node:18
 
 WORKDIR /user/src/app
 
-COPY package*.json ./
+COPY package.json ./
+COPY yarn.lock ./
+COPY tsconfig.json ./
 
 RUN yarn install
 
 COPY . .
 
-RUN yarn build
-
 EXPOSE 3000
 
-CMD ["node", "./build/index.js"]
+CMD ["yarn", "dev"]

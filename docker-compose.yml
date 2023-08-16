@@ -1,11 +1,13 @@
-version: "3"
+version: "3.9"
 
 services:
   node-server:
-    container_name: ai_chat
+    container_name: sunnyvale_demo
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - .:/user/src/app
     ports:
       - 3000:3000
     env_file:

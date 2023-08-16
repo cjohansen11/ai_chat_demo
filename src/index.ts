@@ -1,9 +1,52 @@
-import express from "express";
+import express, { Request, Response, json } from "express";
+import supabase from "./utils/db";
+import * as supabaseController from "./controllers/supabase";
+import { createEmbeddings } from "./controllers/openai";
 
 const app = express();
 
-app.get("/", (req, res) => {
-  res.status(200).send("Hello world");
+app.use(json());
+
+app.get("/", async (req, res) => {
+  const { data, error } = await supabase.from("ai_character").select("*");
+
+  if (error) {
+    return res.status(500).send("Ooops, something went wrong");
+  }
+  res.status(200).send(data);
 });
+
+app.post(
+  `/:aid`,
+  async (
+    req: Request<
+      { aid: string },
+      Record<string, unknown>,
+      { message: string; uid: string }
+    >,
+    res: Response
+  ) => {
+    try {
+      const { aid } = req.params;
+      const { message, uid } = req.body;
+
+      const { name: aiName, bio: aiBio } = await supabaseController.readAIData(
+        aid
+      );
+
+      const gamertag = await supabaseController.readUserData(uid);
+
+      const input = `[USER: ${uid}] [AID: ${aid}] ${message}`;
+
+      const embedding = await createEmbeddings({ input, uid });
+
+      await supabaseController.updateAIWithEmbedding({ aid, embedding });
+
+      res.status(200).send({ aiName, aiBio, gamertag });
+    } catch (error) {
+      res.status(500).send((error as Error).message);
+    }
+  }
+);
 
 app.listen(3000, () => console.log(`Server is listening on port 3000`));
