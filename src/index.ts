@@ -1,5 +1,4 @@
 import express, { Request, Response, json } from "express";
-import supabase from "./utils/db";
 import * as supabaseController from "./controllers/supabase";
 import * as openaiController from "./controllers/openai";
 
