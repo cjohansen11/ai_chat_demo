@@ -136,15 +136,19 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      get_embeddings: {
+      match_messages: {
         Args: {
-          input_vector: string
+          query_embedding: string
+          match_threshold: number
+          match_count: number
         }
         Returns: {
-          ai_character_id: number
           id: string
-          message_id: string
-          vector: string
+          content: string
+          user_id: string
+          ai_id: number
+          sent_by_user: boolean
+          similarity: number
         }[]
       }
     }

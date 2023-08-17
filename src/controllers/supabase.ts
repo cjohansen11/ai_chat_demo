@@ -52,8 +52,10 @@ export const queryEmbeddings = async ({
   embedding: number[];
 }) => {
   try {
-    const { data, error } = await supabase.rpc("get_embeddings", {
-      input_vector: JSON.stringify(embedding),
+    const { data, error } = await supabase.rpc("match_messages", {
+      query_embedding: JSON.stringify(embedding),
+      match_threshold: 0.1,
+      match_count: 10,
     });
     console.log({ data, error });
   } catch (error) {
