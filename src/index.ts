@@ -8,12 +8,7 @@ const app = express();
 app.use(json());
 
 app.get("/", async (req, res) => {
-  const { data, error } = await supabase.from("ai_character").select("*");
-
-  if (error) {
-    return res.status(500).send("Ooops, something went wrong");
-  }
-  res.status(200).send(data);
+  res.status(200).send("Online");
 });
 
 app.post(
