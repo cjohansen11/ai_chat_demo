@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon --config nodemon.json src/index.ts",
     "build": "tsc",
-    "start": "yarn build && node build/index.js"
+    "start": "yarn build && node build/index.js",
+    "gen-types": "supabase gen types typescript --project-id kkgrjzazsphzmfzzbhqq > ./src/database.types.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.32.0",

@@ -31,16 +31,19 @@ export interface Database {
         Row: {
           ai_character_id: number
           id: string
+          message_id: string
           vector: string
         }
         Insert: {
           ai_character_id: number
           id?: string
+          message_id: string
           vector: string
         }
         Update: {
           ai_character_id?: number
           id?: string
+          message_id?: string
           vector?: string
         }
         Relationships: [
@@ -48,6 +51,12 @@ export interface Database {
             foreignKeyName: "embeddings_ai_character_id_fkey"
             columns: ["ai_character_id"]
             referencedRelation: "ai_character"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "embeddings_message_id_fkey"
+            columns: ["message_id"]
+            referencedRelation: "message"
             referencedColumns: ["id"]
           }
         ]
@@ -85,6 +94,12 @@ export interface Database {
             foreignKeyName: "message_ai_id_fkey"
             columns: ["ai_id"]
             referencedRelation: "ai_character"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_embedding_fkey"
+            columns: ["embedding"]
+            referencedRelation: "embeddings"
             referencedColumns: ["id"]
           },
           {
@@ -128,6 +143,7 @@ export interface Database {
         Returns: {
           ai_character_id: number
           id: string
+          message_id: string
           vector: string
         }[]
       }
