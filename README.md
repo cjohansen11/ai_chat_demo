@@ -107,3 +107,19 @@ To run this project, you will need to add the following environment variables to
 `OPENAI_ORG_ID`
 
 `OPENAI_EMBEDDING_MODEL=text-embedding-ada-002`
+
+## Usage
+
+- Log into your Supabase account and create x number of ai_characters as well as atleast 1 user
+- Copy your new Users id
+- Make an http request to `localhost:3000/${ai_character_id}`
+- Add a body to the request that includes the following:
+
+```json
+{
+  "message": "Any string you want",
+  "uid": "userId"
+}
+```
+
+- Send request
