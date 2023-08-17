@@ -30,15 +30,19 @@ app.post(
       const { aid } = req.params;
       const { message, uid } = req.body;
 
-      const { name: aiName, bio: aiBio } = await supabaseController.readAIData(
-        aid
-      );
+      const { bio: aiBio } = await supabaseController.readAIData(aid);
 
       const userInput = `[USER: ${uid}] [AID: ${aid}] ${message}`;
 
       const embedding = await openaiController.createEmbeddings({
         input: userInput,
         uid,
+      });
+
+      // await supabaseController.queryEmbeddings({ embedding });
+
+      const latestMessages = await supabaseController.readLatestMessages({
+        userId: uid,
       });
 
       const messageId = await supabaseController.createMessage({
@@ -48,8 +52,6 @@ app.post(
         sentByUser: true,
       });
 
-      await supabaseController.queryEmbeddings({ embedding });
-
       const embeddingId = await supabaseController.insertEmbedding({
         aid: +aid,
         embedding,
@@ -58,11 +60,43 @@ app.post(
 
       await supabaseController.updateMessage({ messageId, embeddingId });
 
-      const latestMessages = await supabaseController.readLatestMessages({
-        userId: uid,
+      const response = await openaiController.createChatCompletion({
+        messages: [
+          {
+            role: "system",
+            // Adding context such as how the system should respond is important here. Possibly add it the bio.
+            content:
+              "Respond in the first person based on the provided bio: " + aiBio,
+          },
+          ...latestMessages,
+          { role: "user", content: message },
+        ],
       });
 
-      res.status(200).send(latestMessages);
+      const chatResponseEmbedding = await openaiController.createEmbeddings({
+        input: `[USER: ${aid}] [AID: ${aid}] ${response}`,
+        uid,
+      });
+
+      const responseMessageId = await supabaseController.createMessage({
+        userId: uid,
+        aiId: +aid,
+        message: response,
+        sentByUser: false,
+      });
+
+      const responseEmbdeddingId = await supabaseController.insertEmbedding({
+        embedding: chatResponseEmbedding,
+        aid: +aid,
+        messageId: responseMessageId,
+      });
+
+      await supabaseController.updateMessage({
+        messageId: responseMessageId,
+        embeddingId: responseEmbdeddingId,
+      });
+
+      res.status(200).send(response);
     } catch (error) {
       res.status(500).send((error as Error).message);
     }

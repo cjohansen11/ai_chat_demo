@@ -1,3 +1,4 @@
+import { ChatCompletionMessage } from "openai/resources/chat";
 import supabase from "../utils/db";
 
 export const readAIData = async (aid: string) => {
@@ -118,17 +119,22 @@ export const updateMessage = async ({
   }
 };
 
-export const readLatestMessages = async ({ userId }: { userId: string }) => {
+export const readLatestMessages = async ({
+  userId,
+}: {
+  userId: string;
+}): Promise<ChatCompletionMessage[]> => {
   try {
     const { data, error } = await supabase
       .from("message")
       .select("message, sent_by_user, user_id, ai_id")
       .order("received", { ascending: false })
+      .limit(10)
       .eq("user_id", userId);
 
     if (error) throw new Error(error.message);
 
-    return data.map((message) => ({
+    return data.reverse().map((message) => ({
       role: message.sent_by_user ? "user" : "assistant",
       content: message.message,
     }));

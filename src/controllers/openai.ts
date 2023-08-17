@@ -29,12 +29,17 @@ export const createChatCompletion = async ({
   messages: CreateChatCompletionRequestMessage[];
 }) => {
   try {
+    console.log({ messages });
     const { choices } = await openai.chat.completions.create({
       model: "gpt-3.5-turbo-16k-0613",
       messages,
     });
 
-    return choices[0].message;
+    const content = choices[0].message.content;
+
+    if (!content) throw new Error(`No content received`);
+
+    return content;
   } catch (error) {
     throw new Error(`Error occurred creating chat completion: ${error}`);
   }
