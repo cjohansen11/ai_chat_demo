@@ -40,9 +40,16 @@ app.post(
 
       const embedding = await openaiController.createEmbeddings({ input, uid });
 
+      await supabaseController.createMessage({
+        userId: uid,
+        aiId: +aid,
+        message,
+        sentByUser: true,
+      });
+
       await supabaseController.queryEmbeddings({ embedding });
 
-      await supabaseController.insertEmbedding({ aid, embedding });
+      // await supabaseController.insertEmbedding({ aid, embedding });
 
       res.status(200).send({});
     } catch (error) {

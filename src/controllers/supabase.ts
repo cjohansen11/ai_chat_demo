@@ -35,14 +35,18 @@ export const readUserData = async (uid: string) => {
 export const insertEmbedding = async ({
   embedding,
   aid,
+  messageId,
 }: {
   embedding: number[];
   aid: string;
+  messageId: string;
 }) => {
   try {
-    const { error } = await supabase
-      .from("embeddings")
-      .upsert({ ai_character_id: +aid, vector: JSON.stringify(embedding) });
+    const { error } = await supabase.from("embeddings").upsert({
+      ai_character_id: +aid,
+      vector: JSON.stringify(embedding),
+      message_id: messageId,
+    });
 
     if (error) throw new Error(error.message);
   } catch (error) {
@@ -64,5 +68,33 @@ export const queryEmbeddings = async ({
     console.log({ data, error });
   } catch (error) {
     throw new Error(`Error occurred querying embeddings. Error: ${error}`);
+  }
+};
+
+export const createMessage = async ({
+  userId,
+  aiId,
+  message,
+  sentByUser,
+}: {
+  userId: string;
+  aiId: number;
+  message: string;
+  sentByUser: boolean;
+}) => {
+  try {
+    const { data, error } = await supabase
+      .from("message")
+      .upsert({
+        ai_id: aiId,
+        message,
+        sent_by_user: sentByUser,
+        user_id: userId,
+      })
+      .select("id");
+    console.log({ data });
+    if (error) throw new Error(error.message);
+  } catch (error) {
+    throw new Error(`Error occurred creating a new message. Error: ${error}`);
   }
 };

@@ -29,19 +29,19 @@ export interface Database {
       }
       embeddings: {
         Row: {
-          ai_character_id: number | null
+          ai_character_id: number
           id: string
-          vector: string | null
+          vector: string
         }
         Insert: {
-          ai_character_id?: number | null
+          ai_character_id: number
           id?: string
-          vector?: string | null
+          vector: string
         }
         Update: {
-          ai_character_id?: number | null
+          ai_character_id?: number
           id?: string
-          vector?: string | null
+          vector?: string
         }
         Relationships: [
           {
@@ -54,28 +54,31 @@ export interface Database {
       }
       message: {
         Row: {
-          ai_id: number
+          ai_id: number | null
+          embedding: string | null
           id: string
-          message: string
-          received: string
-          sent_by_user: boolean
-          user_id: string
+          message: string | null
+          received: string | null
+          sent_by_user: boolean | null
+          user_id: string | null
         }
         Insert: {
-          ai_id: number
+          ai_id?: number | null
+          embedding?: string | null
           id?: string
-          message: string
-          received?: string
-          sent_by_user: boolean
-          user_id: string
+          message?: string | null
+          received?: string | null
+          sent_by_user?: boolean | null
+          user_id?: string | null
         }
         Update: {
-          ai_id?: number
+          ai_id?: number | null
+          embedding?: string | null
           id?: string
-          message?: string
-          received?: string
-          sent_by_user?: boolean
-          user_id?: string
+          message?: string | null
+          received?: string | null
+          sent_by_user?: boolean | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -118,27 +121,16 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      get_embeddings:
-        | {
-            Args: {
-              input_vector: string
-            }
-            Returns: {
-              ai_character_id: number | null
-              id: string
-              vector: string | null
-            }[]
-          }
-        | {
-            Args: {
-              input_vector: string
-            }
-            Returns: {
-              ai_character_id: number | null
-              id: string
-              vector: string | null
-            }[]
-          }
+      get_embeddings: {
+        Args: {
+          input_vector: string
+        }
+        Returns: {
+          ai_character_id: number
+          id: string
+          vector: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
