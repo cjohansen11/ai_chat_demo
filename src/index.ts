@@ -34,13 +34,11 @@ app.post(
         aid
       );
 
-      const gamertag = await supabaseController.readUserData(uid);
-
       const input = `[USER: ${uid}] [AID: ${aid}] ${message}`;
 
       const embedding = await openaiController.createEmbeddings({ input, uid });
 
-      await supabaseController.createMessage({
+      const messageId = await supabaseController.createMessage({
         userId: uid,
         aiId: +aid,
         message,
@@ -49,7 +47,13 @@ app.post(
 
       await supabaseController.queryEmbeddings({ embedding });
 
-      // await supabaseController.insertEmbedding({ aid, embedding });
+      const embeddingId = await supabaseController.insertEmbedding({
+        aid: +aid,
+        embedding,
+        messageId,
+      });
+
+      await supabaseController.updateMessage({ messageId, embeddingId });
 
       res.status(200).send({});
     } catch (error) {

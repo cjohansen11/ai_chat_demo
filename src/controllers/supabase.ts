@@ -17,38 +17,28 @@ export const readAIData = async (aid: string) => {
   }
 };
 
-export const readUserData = async (uid: string) => {
-  try {
-    const { data, error } = await supabase
-      .from("user")
-      .select("gamertag")
-      .eq("id", uid);
-
-    if (error) throw new Error(error.message);
-
-    return data[0].gamertag;
-  } catch (error) {
-    throw new Error(`Error occurred reading UID: ${uid}. Error: ${error}`);
-  }
-};
-
 export const insertEmbedding = async ({
   embedding,
   aid,
   messageId,
 }: {
   embedding: number[];
-  aid: string;
+  aid: number;
   messageId: string;
 }) => {
   try {
-    const { error } = await supabase.from("embeddings").upsert({
-      ai_character_id: +aid,
-      vector: JSON.stringify(embedding),
-      message_id: messageId,
-    });
+    const { data, error } = await supabase
+      .from("embeddings")
+      .upsert({
+        ai_character_id: aid,
+        vector: JSON.stringify(embedding),
+        message_id: messageId,
+      })
+      .select("id");
 
     if (error) throw new Error(error.message);
+
+    return data[0].id;
   } catch (error) {
     throw new Error(
       `Error occurred adding embedding for AID: ${aid}. Error: ${error}`
@@ -90,11 +80,35 @@ export const createMessage = async ({
         message,
         sent_by_user: sentByUser,
         user_id: userId,
+        received: new Date().toISOString(),
       })
       .select("id");
-    console.log({ data });
+
     if (error) throw new Error(error.message);
+
+    return data[0].id;
   } catch (error) {
     throw new Error(`Error occurred creating a new message. Error: ${error}`);
+  }
+};
+
+export const updateMessage = async ({
+  messageId,
+  embeddingId,
+}: {
+  messageId: string;
+  embeddingId: string;
+}) => {
+  try {
+    const { error } = await supabase
+      .from("message")
+      .update({ embedding: embeddingId })
+      .eq("id", messageId);
+
+    if (error) throw new Error(error.message);
+  } catch (error) {
+    throw new Error(
+      `Error occured updating message ${messageId}. Error: ${error}`
+    );
   }
 };
