@@ -57,7 +57,10 @@ export const queryEmbeddings = async ({
       match_threshold: 0.1,
       match_count: 10,
     });
-    console.log({ data, error });
+
+    if (error) throw new Error(error.message);
+
+    return data;
   } catch (error) {
     throw new Error(`Error occurred querying embeddings. Error: ${error}`);
   }
@@ -112,5 +115,24 @@ export const updateMessage = async ({
     throw new Error(
       `Error occured updating message ${messageId}. Error: ${error}`
     );
+  }
+};
+
+export const readLatestMessages = async ({ userId }: { userId: string }) => {
+  try {
+    const { data, error } = await supabase
+      .from("message")
+      .select("message, sent_by_user, user_id, ai_id")
+      .order("received", { ascending: false })
+      .eq("user_id", userId);
+
+    if (error) throw new Error(error.message);
+
+    return data.map((message) => ({
+      role: message.sent_by_user ? "user" : "assistant",
+      content: message.message,
+    }));
+  } catch (error) {
+    throw new Error(`Error occurred reading latest messages. Error: ${error}`);
   }
 };

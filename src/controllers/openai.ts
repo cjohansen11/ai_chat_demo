@@ -1,3 +1,4 @@
+import { CreateChatCompletionRequestMessage } from "openai/resources/chat";
 import openai from "../utils/openai";
 
 export const createEmbeddings = async ({
@@ -19,5 +20,22 @@ export const createEmbeddings = async ({
     throw new Error(
       `Error occured creating embedding: ${(error as Error).message}`
     );
+  }
+};
+
+export const createChatCompletion = async ({
+  messages,
+}: {
+  messages: CreateChatCompletionRequestMessage[];
+}) => {
+  try {
+    const { choices } = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo-16k-0613",
+      messages,
+    });
+
+    return choices[0].message;
+  } catch (error) {
+    throw new Error(`Error occurred creating chat completion: ${error}`);
   }
 };

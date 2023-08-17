@@ -34,9 +34,12 @@ app.post(
         aid
       );
 
-      const input = `[USER: ${uid}] [AID: ${aid}] ${message}`;
+      const userInput = `[USER: ${uid}] [AID: ${aid}] ${message}`;
 
-      const embedding = await openaiController.createEmbeddings({ input, uid });
+      const embedding = await openaiController.createEmbeddings({
+        input: userInput,
+        uid,
+      });
 
       const messageId = await supabaseController.createMessage({
         userId: uid,
@@ -55,7 +58,11 @@ app.post(
 
       await supabaseController.updateMessage({ messageId, embeddingId });
 
-      res.status(200).send({});
+      const latestMessages = await supabaseController.readLatestMessages({
+        userId: uid,
+      });
+
+      res.status(200).send(latestMessages);
     } catch (error) {
       res.status(500).send((error as Error).message);
     }
