@@ -144,7 +144,7 @@ export interface Database {
         }
         Returns: {
           id: string
-          content: string
+          message: string
           user_id: string
           ai_id: number
           sent_by_user: boolean

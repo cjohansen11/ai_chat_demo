@@ -51,17 +51,20 @@ export const queryEmbeddings = async ({
   embedding,
 }: {
   embedding: number[];
-}) => {
+}): Promise<ChatCompletionMessage[]> => {
   try {
     const { data, error } = await supabase.rpc("match_messages", {
       query_embedding: JSON.stringify(embedding),
-      match_threshold: 0.1,
+      match_threshold: 0.85,
       match_count: 10,
     });
 
     if (error) throw new Error(error.message);
 
-    return data;
+    return data.map((message) => ({
+      role: message.sent_by_user ? "user" : "assistant",
+      content: message.message,
+    }));
   } catch (error) {
     throw new Error(`Error occurred querying embeddings. Error: ${error}`);
   }

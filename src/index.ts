@@ -39,7 +39,9 @@ app.post(
         uid,
       });
 
-      // await supabaseController.queryEmbeddings({ embedding });
+      const relatedMessages = await supabaseController.queryEmbeddings({
+        embedding,
+      });
 
       const latestMessages = await supabaseController.readLatestMessages({
         userId: uid,
@@ -68,6 +70,7 @@ app.post(
             content:
               "Respond in the first person based on the provided bio: " + aiBio,
           },
+          ...relatedMessages,
           ...latestMessages,
           { role: "user", content: message },
         ],

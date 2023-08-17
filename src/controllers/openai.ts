@@ -29,7 +29,6 @@ export const createChatCompletion = async ({
   messages: CreateChatCompletionRequestMessage[];
 }) => {
   try {
-    console.log({ messages });
     const { choices } = await openai.chat.completions.create({
       model: "gpt-3.5-turbo-16k-0613",
       messages,
