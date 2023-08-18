@@ -6,7 +6,7 @@ export const createEmbeddings = async ({
   uid,
 }: {
   input: string;
-  uid: string;
+  uid?: string;
 }) => {
   try {
     const { data } = await openai.embeddings.create({

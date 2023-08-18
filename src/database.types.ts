@@ -29,21 +29,21 @@ export interface Database {
       }
       embeddings: {
         Row: {
-          ai_character_id: number
+          ai_character_id: number | null
           id: string
-          message_id: string
+          message_id: string | null
           vector: string
         }
         Insert: {
-          ai_character_id: number
+          ai_character_id?: number | null
           id?: string
-          message_id: string
+          message_id?: string | null
           vector: string
         }
         Update: {
-          ai_character_id?: number
+          ai_character_id?: number | null
           id?: string
-          message_id?: string
+          message_id?: string | null
           vector?: string
         }
         Relationships: [

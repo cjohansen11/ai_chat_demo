@@ -11,7 +11,7 @@ app.get("/", async (req, res) => {
 });
 
 app.post(
-  `/:aid`,
+  `/chat/:aid`,
   async (
     req: Request<
       { aid: string },
@@ -23,7 +23,6 @@ app.post(
     try {
       const { aid } = req.params;
       const { message, uid } = req.body;
-
       const { bio: aiBio } = await supabaseController.readAIData(aid);
 
       const userInput = `[USER: ${uid}] [AID: ${aid}] ${message}`;
@@ -94,6 +93,32 @@ app.post(
       });
 
       res.status(200).send(response);
+    } catch (error) {
+      res.status(500).send((error as Error).message);
+    }
+  }
+);
+
+app.post(
+  "/shared-knowledge",
+  async (
+    req: Request<
+      Record<string, unknown>,
+      Record<string, unknown>,
+      { info: string }
+    >,
+    res: Response
+  ) => {
+    try {
+      const { info } = req.body;
+      console.log({ info });
+      const infoEmbedding = await openaiController.createEmbeddings({
+        input: info,
+      });
+
+      await supabaseController.insertEmbedding({ embedding: infoEmbedding });
+
+      res.status(200).send("Successfully saved shared knowledge");
     } catch (error) {
       res.status(500).send((error as Error).message);
     }

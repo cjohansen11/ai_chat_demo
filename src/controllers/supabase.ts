@@ -24,8 +24,8 @@ export const insertEmbedding = async ({
   messageId,
 }: {
   embedding: number[];
-  aid: number;
-  messageId: string;
+  aid?: number;
+  messageId?: string;
 }) => {
   try {
     const { data, error } = await supabase
