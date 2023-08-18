@@ -110,6 +110,34 @@ export interface Database {
           }
         ]
       }
+      shared_knowledge: {
+        Row: {
+          created_at: string
+          embedding_id: string | null
+          id: string
+          info: string
+        }
+        Insert: {
+          created_at?: string
+          embedding_id?: string | null
+          id?: string
+          info: string
+        }
+        Update: {
+          created_at?: string
+          embedding_id?: string | null
+          id?: string
+          info?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_knowledge_embedding_id_fkey"
+            columns: ["embedding_id"]
+            referencedRelation: "embeddings"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       user: {
         Row: {
           created_at: string
