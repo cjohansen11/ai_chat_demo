@@ -3,16 +3,16 @@ import openai from "../utils/openai";
 
 export const createEmbeddings = async ({
   input,
-  uid,
+  userId,
 }: {
   input: string;
-  uid?: string;
+  userId?: string;
 }) => {
   try {
     const { data } = await openai.embeddings.create({
       input,
       model: process.env.OPENAI_EMBEDDING_MODEL as string,
-      user: uid,
+      user: userId,
     });
 
     return data[0].embedding;

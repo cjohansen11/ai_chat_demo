@@ -1,37 +1,37 @@
 import { ChatCompletionMessage } from "openai/resources/chat";
 import supabase from "../utils/db";
 
-export const readAIData = async (aid: string) => {
+export const readAIData = async (aiId: string) => {
   try {
     const { data, error } = await supabase
       .from("ai_character")
       .select("name, bio")
-      .eq("id", aid);
+      .eq("id", aiId);
 
-    if (data?.length === 0) throw new Error(`${aid} not found`);
+    if (data?.length === 0) throw new Error(`${aiId} not found`);
 
     if (error) throw new Error(error.message);
 
     return data[0];
   } catch (error) {
-    throw new Error(`Error occurred reading AID: ${aid}. Error: ${error}`);
+    throw new Error(`Error occurred reading AiID: ${aiId}. Error: ${error}`);
   }
 };
 
 export const insertEmbedding = async ({
   embedding,
-  aid,
+  aiId,
   messageId,
 }: {
   embedding: number[];
-  aid?: number;
+  aiId?: number;
   messageId?: string;
 }) => {
   try {
     const { data, error } = await supabase
       .from("embeddings")
       .upsert({
-        ai_character_id: aid,
+        ai_character_id: aiId,
         vector: JSON.stringify(embedding),
         message_id: messageId,
       })
@@ -42,7 +42,7 @@ export const insertEmbedding = async ({
     return data[0].id;
   } catch (error) {
     throw new Error(
-      `Error occurred adding embedding for AID: ${aid}. Error: ${error}`
+      `Error occurred adding embedding for AID: ${aiId}. Error: ${error}`
     );
   }
 };

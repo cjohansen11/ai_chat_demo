@@ -14,22 +14,22 @@ app.post(
   `/chat/:aid`,
   async (
     req: Request<
-      { aid: string },
+      { aiId: string },
       Record<string, unknown>,
-      { message: string; uid: string }
+      { message: string; userId: string }
     >,
     res: Response
   ) => {
     try {
-      const { aid } = req.params;
-      const { message, uid } = req.body;
-      const { bio: aiBio } = await supabaseController.readAIData(aid);
+      const { aiId } = req.params;
+      const { message, userId } = req.body;
+      const { bio: aiBio } = await supabaseController.readAIData(aiId);
 
-      const userInput = `[USER: ${uid}] [AID: ${aid}] ${message}`;
+      const userInput = `[USER: ${userId}] [AiID: ${aiId}] ${message}`;
 
       const embedding = await openaiController.createEmbeddings({
         input: userInput,
-        uid,
+        userId,
       });
 
       const relatedMessages = await supabaseController.queryEmbeddings({
@@ -37,18 +37,18 @@ app.post(
       });
 
       const latestMessages = await supabaseController.readLatestMessages({
-        userId: uid,
+        userId,
       });
 
       const messageId = await supabaseController.createMessage({
-        userId: uid,
-        aiId: +aid,
+        userId,
+        aiId: +aiId,
         message,
         sentByUser: true,
       });
 
       const embeddingId = await supabaseController.insertEmbedding({
-        aid: +aid,
+        aiId: +aiId,
         embedding,
         messageId,
       });
@@ -70,20 +70,20 @@ app.post(
       });
 
       const chatResponseEmbedding = await openaiController.createEmbeddings({
-        input: `[USER: ${aid}] [AID: ${aid}] ${response}`,
-        uid,
+        input: `[USER: ${aiId}] [AiID: ${aiId}] ${response}`,
+        userId,
       });
 
       const responseMessageId = await supabaseController.createMessage({
-        userId: uid,
-        aiId: +aid,
+        userId,
+        aiId: +aiId,
         message: response,
         sentByUser: false,
       });
 
       const responseEmbdeddingId = await supabaseController.insertEmbedding({
         embedding: chatResponseEmbedding,
-        aid: +aid,
+        aiId: +aiId,
         messageId: responseMessageId,
       });
 
@@ -111,7 +111,7 @@ app.post(
   ) => {
     try {
       const { info } = req.body;
-      console.log({ info });
+
       const infoEmbedding = await openaiController.createEmbeddings({
         input: info,
       });
